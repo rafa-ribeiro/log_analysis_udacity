@@ -16,6 +16,14 @@ def top_three_articles():
     return c.fetchall()
     db.close()
 
+def top_authors_most_popuplar():
+    query = "select a.name, t.views from authors a join top_articles t on t.author = a.id"
+
+    db = connect_db()
+    c = db.cursor()
+    c.execute(query)
+    return c.fetchall()
+    db.close()
 
 def initialize_views():
     db = connect_db()
