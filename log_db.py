@@ -25,6 +25,18 @@ def top_authors_most_popuplar():
     return c.fetchall()
     db.close()
 
+
+def days_with_more_errors_request():
+    query = "select result.day, result.percent_errors from percent_errors_requests as result where result.percent_errors > 1;"
+
+    db = connect_db()
+    c = db.cursor()
+    c.execute(query)
+    return c.fetchall()
+    print("Fechando conexao com banco.")
+    db.close()
+
+
 def initialize_views():
     db = connect_db()
     check_view(db, TOP_ARTICLES_VIEW_NAME)

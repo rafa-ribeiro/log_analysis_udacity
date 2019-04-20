@@ -1,4 +1,4 @@
-from log_db import initialize_views, top_three_articles, top_authors_most_popuplar
+from log_db import initialize_views, top_three_articles, top_authors_most_popuplar, days_with_more_errors_request
 
 def main():
     # print("Initialize DB Views.")
@@ -10,6 +10,10 @@ def main():
 
     print("Top most popular Authors:")
     result = top_authors_most_popuplar()
+    print(result)
+
+    print("Days with more errors requests: ")
+    result = days_with_more_errors_request()
     print(result)
 
 
