@@ -2,10 +2,9 @@
 
 import psycopg2
 
-# TOP_ARTICLES_VIEW = "select a.title as Article, count(*) as Views from log l join articles a on l.path = CONCAT('/article/', a.slug) group by a.title order by Views desc"
+views = ["top_articles", "errors_requests_per_day",
+         "total_requests_per_day", "percent_errors_requests"]
 
-TOP_ARTICLES_VIEW_NAME = "top_articles"
-TOP_ARTICLES_VIEW = "create view %s AS select a.author, a.title as Article, count(*) as Views from log l join articles a on l.path = CONCAT('/article/', a.slug) group by a.title, a.author order by Views desc" % TOP_ARTICLES_VIEW_NAME
 
 def top_three_articles():
     query = "select t.article, t.views from top_articles t limit 3"
@@ -13,49 +12,67 @@ def top_three_articles():
     db = connect_db()
     c = db.cursor()
     c.execute(query)
-    return c.fetchall()
+    result = c.fetchall()
     db.close()
 
+    print("%s | %s" % ('Articles'.ljust(50), 'Views'))
+    for row in result:
+        print("%s | %s" % (row[0].ljust(50), row[1]))
+    print("\n")
+
+
 def top_authors_most_popuplar():
-    query = "select a.name, t.views from authors a join top_articles t on t.author = a.id"
+    query = "select a.name, t.views from authors a " \
+            "join top_articles t on t.author = a.id"
 
     db = connect_db()
     c = db.cursor()
     c.execute(query)
-    return c.fetchall()
+    result = c.fetchall()
     db.close()
+
+    print("%s | %s" % ('Name'.ljust(50), 'Views'))
+    for row in result:
+        print("%s | %s" % (row[0].ljust(50), row[1]))
+    print("\n")
 
 
 def days_with_more_errors_request():
-    query = "select result.day, result.percent_errors from percent_errors_requests as result where result.percent_errors > 1;"
+    query = "select result.day, result.percent_errors " \
+            "from percent_errors_requests as result " \
+            "where result.percent_errors > 1"
 
     db = connect_db()
     c = db.cursor()
     c.execute(query)
-    return c.fetchall()
-    print("Fechando conexao com banco.")
+    result = c.fetchall()
     db.close()
+
+    print("%s | %s" % ('Day'.ljust(50), 'Percent errors'))
+    for row in result:
+        print("%s | %s" % (str(row[0]).ljust(50), row[1]))
+    print("\n")
 
 
 def initialize_views():
     db = connect_db()
-    check_view(db, TOP_ARTICLES_VIEW_NAME)
+    check_views(db)
     db.close()
 
-def check_view(db, view_name):
+
+def check_views(db):
     c = db.cursor()
+    for view in views:
+        count_query = "select count(*) from INFORMATION_SCHEMA.views " \
+                      "where table_name = '%s'" % view
 
-    count_query = ("select count(*) from INFORMATION_SCHEMA.views where table_name = '%s'" % view_name)
-    c.execute(count_query)
-    count = c.fetchone()[0]
+        c.execute(count_query)
+        count = c.fetchone()[0]
+        if (count == 0):
+            msg = "Error. View '%s' not found. Please, execute the create" \
+                "views described in file 'log_analysis_views.sql'." % view
+            raise Exception(msg)
 
-    print("Checando view '%s'" % view_name)
-    if (count == 1):
-        print("View OK." % view_name)
-    else:
-        c.execute(TOP_ARTICLES_VIEW)
-        db.commit()
-        print("View nao encontrada. Criando view...")
 
 def connect_db():
     """Connect to database"""
