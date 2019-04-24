@@ -1,10 +1,10 @@
-from log_db import initialize_views, top_three_articles
+from log_db import check_views, top_three_articles
 from log_db import top_authors_most_popuplar, days_with_more_errors_request
 
 
 def main():
     print("Check DB Views.")
-    initialize_views()
+    check_views()
 
     print("Top 3 most popular articles: ")
     top_three_articles()

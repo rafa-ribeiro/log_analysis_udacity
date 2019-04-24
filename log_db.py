@@ -53,13 +53,13 @@ def days_with_more_errors_request():
     print("\n")
 
 
-def initialize_views():
+def check_views():
     db = connect_db()
-    check_views(db)
+    check_views_exists(db)
     db.close()
 
 
-def check_views(db):
+def check_views_exists(db):
     c = db.cursor()
     for view in views:
         count_query = "select count(*) from INFORMATION_SCHEMA.views " \
