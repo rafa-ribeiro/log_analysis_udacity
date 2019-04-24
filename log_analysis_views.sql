@@ -33,7 +33,7 @@ create view total_requests_per_day AS
 
 -- Query para retornar o percentual de requisições que resultaram em erros agrupadas por dia.
 create view percent_errors_requests AS 
-    select e.day, round(CAST(CAST(e.errors*100 AS float)/CAST(t.total AS float) AS numeric), 2) as percent_errors 
+    select TO_CHAR(e.day, 'Mon DD, YYYY') as day, round(CAST(CAST(e.errors*100 AS float)/CAST(t.total AS float) AS numeric), 2) as percent_errors 
     from errors_requests_per_day as e, 
          total_requests_per_day as t 
     where e.day = t.day;
