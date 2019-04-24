@@ -2,7 +2,7 @@
 
 import psycopg2
 
-views = ["top_articles", "errors_requests_per_day",
+views = ["top_articles", "top_authors", "errors_requests_per_day",
          "total_requests_per_day", "percent_errors_requests"]
 
 
@@ -22,8 +22,7 @@ def top_three_articles():
 
 
 def top_authors_most_popuplar():
-    query = "select a.name, t.views from authors a " \
-            "join top_articles t on t.author = a.id"
+    query = "select ta.author, ta.views from top_authors ta"
 
     db = connect_db()
     c = db.cursor()
